@@ -1,10 +1,10 @@
-# GraficasMultiagentes
-Modelación de Sistemas Multiagentes y Gráficas Computacionales
+# _TC2008B_
+## Modelación de Sistemas Multiagentes y Gráficas Computacionales
 
-Integrantes del equipo:
+Repositorio del proyecto integrador.
 
-● Omar Rodrigo Sorchini Puente - A01749389
+**Integrantes del equipo:**
 
-● Melissa Garduño Ruiz - A01748945
-
-● Emilio Rios Ochoa - A01378965
+● Omar Rodrigo Sorchini Puente - A01749389<br/>
+● Melissa Garduño Ruiz - A01748945<br/>
+● Emilio Rios Ochoa - A01378965<br/>
