@@ -2,9 +2,18 @@
     ">" : "Right",
     "<" : "Left",
     "z" : "Zebra",
+    "Z" : "Zebra",
+    "-" : "Sidewalk",
+    "|" : "Sidewalk",
+    "X" : "Sidewalk",
+    "+" : "Sidewalk",
     "." : "Omni",
     "#" : "Building",
     "v" : "Down",
     "^" : "Up",
-    "D" : "Destination"
+    "D" : "Destination",
+    "[" : "StopSign",
+    "]" : "StopSign",
+    "(" : "StopSign",
+    ")" : "StopSign"
 }
