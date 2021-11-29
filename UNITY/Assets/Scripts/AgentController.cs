@@ -9,25 +9,18 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public class CarData
-{
-    public int uniqueID;
-    public Vector3 position;
-}
-
-public class AgentData
-{
+public class AgentData {
     public List<Vector3> positions;
 }
 
-public class AgentController : MonoBehaviour
-{
-    // private string url = "https://boids.us-south.cf.appdomain.cloud/";
+public class AgentController : MonoBehaviour {
     string serverUrl = "http://localhost:8585";
     string getAgentsEndpoint = "/getAgents";
     string getObstaclesEndpoint = "/getObstacles";
     string sendConfigEndpoint = "/init";
     string updateEndpoint = "/update";
+    
+    
     AgentData carsData, obstacleData;
     GameObject[] agents;
     List<Vector3> oldPositions;
@@ -61,7 +54,7 @@ public class AgentController : MonoBehaviour
 
     private void Update() 
     {
-        float t = timer/timeToUpdate;
+        /*float t = timer/timeToUpdate;
         // Smooth out the transition at start and end
         dt = t * t * ( 3f - 2f*t);
 
@@ -85,22 +78,9 @@ public class AgentController : MonoBehaviour
             }
             // Move time from the last frame
             timer += Time.deltaTime;
-        }
+        }*/
     }
  
-    IEnumerator UpdateSimulation()
-    {
-        UnityWebRequest www = UnityWebRequest.Get(serverUrl + updateEndpoint);
-        yield return www.SendWebRequest();
- 
-        if (www.result != UnityWebRequest.Result.Success)
-            Debug.Log(www.error);
-        else 
-        {
-            StartCoroutine(GetCarsData());
-        }
-    }
-
     IEnumerator SendConfiguration()
     {
         WWWForm form = new WWWForm();
@@ -124,6 +104,19 @@ public class AgentController : MonoBehaviour
             Debug.Log("Getting Agents positions");
             StartCoroutine(GetCarsData());
             StartCoroutine(GetObstacleData());
+        }
+    }
+
+	/*IEnumerator UpdateSimulation()
+    {
+        UnityWebRequest www = UnityWebRequest.Get(serverUrl + updateEndpoint);
+        yield return www.SendWebRequest();
+ 
+        if (www.result != UnityWebRequest.Result.Success)
+            Debug.Log(www.error);
+        else 
+        {
+            StartCoroutine(GetCarsData());
         }
     }
 
@@ -168,5 +161,5 @@ public class AgentController : MonoBehaviour
                 Instantiate(obstaclePrefab, position, Quaternion.identity);
             }
         }
-    }
+    }*/
 }
