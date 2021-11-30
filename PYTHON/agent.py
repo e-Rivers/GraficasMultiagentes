@@ -26,32 +26,45 @@ class Car(Agent):
             moore=True, # Boolean for whether to use Moore neighborhood (including diagonals) or Von Neumann (only up/down/left/right).
             include_center=True) 
         
-        # Checks which grid cells are empty
-        freeSpaces = list(map(self.model.grid.is_cell_empty, possible_steps))
+        # Movement indexes 
+        # 2 5 8
+        # 1 4 7
+        # 0 3 6
 
-        next_moves = [p for p,f in zip(possible_steps, freeSpaces) if f == True]
+        # First scan all neighbors type
+        posStepsType = [type(i) for i in possible_steps]
+        
+        # Scans to find if there's a destination around
+        #for 
+
+
+
+
+        # Checks which grid cells are empty
+        #freeSpaces = list(map(self.model.grid.is_cell_empty, possible_steps))
+
+        #next_moves = [p for p,f in zip(possible_steps, freeSpaces) if f == True]
        
-        next_move = self.random.choice(next_moves)
+        #next_move = self.random.choice(freeSpaces)#next_moves)
         # Now move:
-        if self.random.random() < 0.1:
-            self.model.grid.move_agent(self, next_move)
-            self.steps_taken+=1
+        #if self.random.random() < 0.1:
+        #    self.model.grid.move_agent(self, next_move)
+        #    self.steps_taken+=1
 
         # If the cell is empty, moves the agent to that cell; otherwise, it stays at the same position
-        # if freeSpaces[self.direction]:
-        #     self.model.grid.move_agent(self, possible_steps[self.direction])
-        #     print(f"Se mueve de {self.pos} a {possible_steps[self.direction]}; direction {self.direction}")
-        # else:
-        #     print(f"No se puede mover de {self.pos} en esa direccion.")
+        #if freeSpaces[self.direction]:
+        #    self.model.grid.move_agent(self, possible_steps[self.direction])
+        #    print(f"Se mueve de {self.pos} a {possible_steps[self.direction]}; direction {self.direction}")
+        #else:
+        #    print(f"No se puede mover de {self.pos} en esa direccion.")
 
     def step(self):
         """ 
         Determines the new direction it will take, and then moves
         """
-        # self.direction = self.random.randint(0,8)
-        # print(f"Agente: {self.unique_id} movimiento {self.direction}")
-        # self.move()
-        pass
+        self.direction = self.random.randint(0,8)
+        print(f"Agente: {self.unique_id} movimiento {self.direction}")
+        self.move()
 
 class Traffic_Light(Agent):
     """

@@ -5,13 +5,11 @@ from mesa.visualization.ModularVisualization import ModularServer
 
 def agent_portrayal(agent):
     if agent is None: return
-    
+
     portrayal = {"Shape": "rect",
                  "Filled": "true",
-                 "Layer": 1,
                  "w": 1,
-                 "h": 1
-                 }
+                 "h": 1}
 
     if (isinstance(agent, Road)):
         portrayal["Color"] = "grey"
@@ -32,6 +30,12 @@ def agent_portrayal(agent):
         portrayal["Layer"] = 0
         portrayal["w"] = 0.8
         portrayal["h"] = 0.8
+
+    if (isinstance(agent, Car)):
+        portrayal["Color"] = "#0000FF"
+        portrayal["Layer"] = 1
+        portrayal["Shape"] = "circle"
+        portrayal["r"] = 1
 
     return portrayal
 

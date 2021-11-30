@@ -31,7 +31,6 @@ class RandomModel(Model):
                     elif col in ["S", "s"]:
                         agent = Traffic_Light(f"tl{r*self.width+c}", self, False if col == "S" else True, int(dataDictionary[col]))
                         self.grid.place_agent(agent, (c, self.height - r - 1))
-                        self.schedule.add(agent)
                     elif col == "#":
                         agent = Obstacle(f"ob{r*self.width+c}", self)
                         self.grid.place_agent(agent, (c, self.height - r - 1))
@@ -41,6 +40,11 @@ class RandomModel(Model):
 
         self.num_agents = N
         self.running = True 
+
+        for i in range(self.num_agents):
+            carAgent = Car(f"car{i*self.width}", self)
+            self.grid.place_agent(carAgent, (1,1))
+            self.schedule.add(carAgent)
 
     def step(self):
         '''Advance the model by one step.'''

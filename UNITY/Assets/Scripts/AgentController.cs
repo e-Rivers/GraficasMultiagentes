@@ -102,8 +102,8 @@ public class AgentController : MonoBehaviour {
         {
             Debug.Log("Configuration upload complete!");
             Debug.Log("Getting Agents positions");
-            StartCoroutine(GetCarsData());
-            StartCoroutine(GetObstacleData());
+            //StartCoroutine(GetCarsData());
+            //StartCoroutine(GetObstacleData());
         }
     }
 
