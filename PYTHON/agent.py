@@ -1,10 +1,26 @@
 from mesa import Agent
 
 class Car(Agent):
+    """
+    Agent that moves randomly.
+    Attributes:
+        unique_id: Agent's ID 
+        direction: Randomly chosen direction chosen from one of eight directions
+    """
     def __init__(self, unique_id, model):
+        """
+        Creates a new random agent.
+        Args:
+            unique_id: The agent's ID
+            model: Model reference for the agent
+        """
         super().__init__(unique_id, model)
         
+
     def move(self):
+        """ 
+        Determines if the agent can move in the direction that was chosen
+        """
         possible_steps = self.model.grid.get_neighborhood(
             self.pos,
             moore=True, # Boolean for whether to use Moore neighborhood (including diagonals) or Von Neumann (only up/down/left/right).
@@ -29,33 +45,55 @@ class Car(Agent):
         #     print(f"No se puede mover de {self.pos} en esa direccion.")
 
     def step(self):
+        """ 
+        Determines the new direction it will take, and then moves
+        """
         # self.direction = self.random.randint(0,8)
         # print(f"Agente: {self.unique_id} movimiento {self.direction}")
         # self.move()
         pass
 
-class Pedestrian(Agent):
+class Traffic_Light(Agent):
+    """
+    Obstacle agent. Just to add obstacles to the grid.
+    """
+    def __init__(self, unique_id, model, state = False, timeToChange = 10):
+        super().__init__(unique_id, model)
+        self.state = state
+        self.timeToChange = timeToChange
+
+    def step(self):
+        # if self.model.schedule.steps % self.timeToChange == 0:
+        #     self.state = not self.state
+        pass
+
+class Destination(Agent):
+    """
+    Obstacle agent. Just to add obstacles to the grid.
+    """
     def __init__(self, unique_id, model):
         super().__init__(unique_id, model)
-    
+
     def step(self):
         pass
 
-class StopSign(Agent):
+class Obstacle(Agent):
+    """
+    Obstacle agent. Just to add obstacles to the grid.
+    """
     def __init__(self, unique_id, model):
         super().__init__(unique_id, model)
 
-class Building(Agent):
-    def __init__(self, unique_id, model):
-        super().__init__(unique_id, model)
+    def step(self):
+        pass
 
 class Road(Agent):
-    def __init__(self, unique_id, model, direction, isZebra):
+    """
+    Obstacle agent. Just to add obstacles to the grid.
+    """
+    def __init__(self, unique_id, model, direction= "Left"):
         super().__init__(unique_id, model)
         self.direction = direction
-        self.zebraCross = isZebra
 
-class Sidewalk(Agent):
-    def __init__(self, unique_id, model, orientation):
-        super().__init__(unique_id, model)
-        self.orientation = orientation
+    def step(self):
+        pass
