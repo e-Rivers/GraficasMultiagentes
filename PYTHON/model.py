@@ -48,6 +48,7 @@ class RandomModel(Model):
         self.running = True 
 
         for i in range(self.num_agents):
+#        for i in range(1):
             carAgent = Car(f"car{self.carIDs}", self, choice(self.destCoords))
             spawnPos = (randrange(0, self.width), randrange(0, self.height))
             conType = [type(i) for i in self.grid.get_cell_list_contents([spawnPos])]
