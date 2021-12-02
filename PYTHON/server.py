@@ -60,7 +60,6 @@ def getCars():
     if request.method == "GET":
         carPositions = [{"x":x,"y":e.yPos,"z":z,"id":e.unique_id} for (a,x,z) in trafficModel.grid.coord_iter() for e in a if isinstance(e, Car)]
 
-        print(carPositions)
         carPositions.sort(key=lambda x: x["id"])
         return jsonify({"positions": carPositions})
 
