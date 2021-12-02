@@ -24,8 +24,8 @@ class Car(Agent):
         ● Return: None
         """
         super().__init__(uniqueID, model)
-        # Value used to make the car "disappear"
-        self.yPos = 0
+        # Value used know if the car has stopped
+        self.isStop = False
         # Attributes to make the agent know where to go 
         self.destination = destPos
         self.tmpDir = ""
@@ -53,45 +53,52 @@ class Car(Agent):
         motion = self.getMotion(possibleSteps)
         
         # If it's already in a Destination, then quits
-        if Destination in getConOfCell(self.pos):
-            self.yPos = -100
-            return
-
-        # Scans to find if there's a destination around
-        for neighbor in possibleSteps:
-            # If it finds a destination point, it moves there
-            if self.destination == neighbor:
-                self.model.grid.move_agent(self, neighbor)
-                return
+        if self.pos != self.destination:
+            # Scans to find if there's a destination around
+            for neighbor in possibleSteps:
+                # If it finds a destination point, it moves there
+                if self.destination == neighbor:
+                    self.model.grid.move_agent(self, neighbor)
+                    self.isStop = False
+                    return
     
-        # Checks if is on the road (which it is, but is basically to differentiate from the Traffic Light cell)
-        if Road == posStepsType[currPos][0]: 
+            # Checks if is on the road (which it is, but is basically to differentiate from the Traffic Light cell)
+            if Road == posStepsType[currPos][0]: 
 
-            # Checks if the car is on a "decision section" (intersection)
-            if posStepsCont[currPos][0].direction == "Omni":
-                futurePos = possibleSteps[motion[self.tmpDir]]
-                # If the car is moving horizontally then it moves to the possible next coordinates given that axis and direction
-                if self.tmpDir == "Left" or self.tmpDir == "Right":
-                    self.makeDecision([(futurePos[0], futurePos[1]+1), futurePos, (futurePos[0], futurePos[1]-1), (self.pos[0], self.pos[1]+1), (self.pos[0], self.pos[1]-1)], getConTypeOfCell, 1)
-                # If the car is moving vertically then it moves to the possible next coordinates given that axis and direction
-                elif self.tmpDir == "Up" or self.tmpDir == "Down":
-                    self.makeDecision([(futurePos[0]+1, futurePos[1]), futurePos, (futurePos[0]-1, futurePos[1]), (self.pos[0]+1, self.pos[1]), (self.pos[0]-1, self.pos[1])], getConTypeOfCell, 0)
-            else:
-                futurePos = motion[posStepsCont[currPos][0].direction]
-                # If there's a traffic light in front
-                if Traffic_Light == posStepsType[futurePos][0]:
-                    if posStepsCont[futurePos][0].state and Car not in posStepsType[futurePos]:
+                # Checks if the car is on a "decision section" (intersection)
+                if posStepsCont[currPos][0].direction == "Omni":
+                    futurePos = possibleSteps[motion[self.tmpDir]]
+                    # If the car is moving horizontally then it moves to the possible next coordinates given that axis and direction
+                    if self.tmpDir == "Left" or self.tmpDir == "Right":
+                        self.makeDecision([(futurePos[0], futurePos[1]+1), futurePos, (futurePos[0], futurePos[1]-1), (self.pos[0], self.pos[1]+1), (self.pos[0], self.pos[1]-1)], getConTypeOfCell, 1)
+                    # If the car is moving vertically then it moves to the possible next coordinates given that axis and direction
+                    elif self.tmpDir == "Up" or self.tmpDir == "Down":
+                        self.makeDecision([(futurePos[0]+1, futurePos[1]), futurePos, (futurePos[0]-1, futurePos[1]), (self.pos[0]+1, self.pos[1]), (self.pos[0]-1, self.pos[1])], getConTypeOfCell, 0)
+                else:
+                    futurePos = motion[posStepsCont[currPos][0].direction]
+                    # If there's a traffic light in front
+                    if Traffic_Light == posStepsType[futurePos][0]:
+                        if posStepsCont[futurePos][0].state and Car not in posStepsType[futurePos]:
+                            self.model.grid.move_agent(self, possibleSteps[futurePos]) 
+                            self.tmpDir = posStepsCont[currPos][0].direction
+                            self.isStop = False
+                        else:
+                            self.isStop = True
+                    # If there are no cars in front
+                    elif Car not in posStepsType[futurePos]:
                         self.model.grid.move_agent(self, possibleSteps[futurePos]) 
                         self.tmpDir = posStepsCont[currPos][0].direction
-                # If there are no cars in front
-                elif Car not in posStepsType[futurePos]:
-                    self.model.grid.move_agent(self, possibleSteps[futurePos]) 
-                    self.tmpDir = posStepsCont[currPos][0].direction
-                    
-        # If the car is in the cell where the traffic light is
-        else:
-            if Car not in posStepsType[motion[self.tmpDir]]:
-                self.model.grid.move_agent(self, possibleSteps[motion[self.tmpDir]]) 
+                        self.isStop = False
+                    else:
+                        self.isStop = True
+                        
+            # If the car is in the cell where the traffic light is
+            else:
+                if Car not in posStepsType[motion[self.tmpDir]]:
+                    self.model.grid.move_agent(self, possibleSteps[motion[self.tmpDir]]) 
+                    self.isStop = False
+                else:
+                    self.isStop = True
 
     def getMotion(self, posSteps):
         """
@@ -188,6 +195,9 @@ class Car(Agent):
             else:
                 self.takenRoute[1][self.takenRoute[0].index(self.pos)].append(posDirs[dirIndex])
             self.model.grid.move_agent(self, posDirs[dirIndex])
+            self.isStop = False
+        else:
+            self.isStop = True
 
 
 # Traffic lights that will regulate the traffic of the cars in intersections
