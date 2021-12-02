@@ -55,9 +55,6 @@ class Car(Agent):
         # If it's already in a Destination, then quits
         if Destination in getConOfCell(self.pos):
             self.yPos = -100
-            print("#########################")
-            print(self.yPos)
-            print("#########################")
             return
 
         # Scans to find if there's a destination around
@@ -83,7 +80,7 @@ class Car(Agent):
                 futurePos = motion[posStepsCont[currPos][0].direction]
                 # If there's a traffic light in front
                 if Traffic_Light == posStepsType[futurePos][0]:
-                    if posStepsCont[futurePos][0].state:
+                    if posStepsCont[futurePos][0].state and Car not in posStepsType[futurePos]:
                         self.model.grid.move_agent(self, possibleSteps[futurePos]) 
                         self.tmpDir = posStepsCont[currPos][0].direction
                 # If there are no cars in front
@@ -93,7 +90,8 @@ class Car(Agent):
                     
         # If the car is in the cell where the traffic light is
         else:
-            self.model.grid.move_agent(self, possibleSteps[motion[self.tmpDir]]) 
+            if Car not in posStepsType[motion[self.tmpDir]]:
+                self.model.grid.move_agent(self, possibleSteps[motion[self.tmpDir]]) 
 
     def getMotion(self, posSteps):
         """
@@ -135,6 +133,7 @@ class Car(Agent):
         minDistSigma = self.model.width*2 + self.model.height*2
         bestFuture = None
         reevaluate = None
+        jokerFuture = None
         # If the car is on an intersection repeated (possible cycle) then it finds the index from the logs list
         # of the last time it was in this particular intersection
         if self.pos in self.takenRoute[0]:
@@ -153,11 +152,17 @@ class Car(Agent):
                             if posDirs[p] not in self.takenRoute[1][reevaluate]:
                                 minDistSigma = abs(1+self.destination[0]-posDirs[p][0])+abs(1+self.destination[1]-posDirs[p][1])
                                 bestFuture = p
+                            jokerFuture = p
                         # if it's the first time, then this one becomes the best option
                         else:
                             minDistSigma = abs(1+self.destination[0]-posDirs[p][0])+abs(1+self.destination[1]-posDirs[p][1])
                             bestFuture = p
-        return bestFuture
+        # In case there's a completely unavoidable loop, then it keeps cycling cause the car rather continue its endless
+        # path than stopping the entire stream of cars behind who actually know where they're heading to
+        if bestFuture == None:
+            return jokerFuture
+        else:
+            return bestFuture
 
     def makeDecision(self, posDirs, getConTypeOfCell, axis):
         """
@@ -174,14 +179,15 @@ class Car(Agent):
         """
         # Gets the best option from all the possibilities
         dirIndex = self.getBestMove(posDirs, getConTypeOfCell, axis)
-        # If it's the car's first time on that intersection it keeps a log of that and the decision (coordinate where it went next) it made
-        if self.pos not in self.takenRoute[0]:
-            self.takenRoute[0].append(self.pos)
-            self.takenRoute[1].append([posDirs[dirIndex]])
-        # If it had already been there then just adds the decision made to the list of decisions made on that particular coordinate
-        else:
-            self.takenRoute[1][self.takenRoute[0].index(self.pos)].append(posDirs[dirIndex])
-        self.model.grid.move_agent(self, posDirs[dirIndex])
+        if Car not in getConTypeOfCell(posDirs[dirIndex]):
+            # If it's the car's first time on that intersection it keeps a log of that and the decision (coordinate where it went next) it made
+            if self.pos not in self.takenRoute[0]:
+                self.takenRoute[0].append(self.pos)
+                self.takenRoute[1].append([posDirs[dirIndex]])
+            # If it had already been there then just adds the decision made to the list of decisions made on that particular coordinate
+            else:
+                self.takenRoute[1][self.takenRoute[0].index(self.pos)].append(posDirs[dirIndex])
+            self.model.grid.move_agent(self, posDirs[dirIndex])
 
 
 # Traffic lights that will regulate the traffic of the cars in intersections

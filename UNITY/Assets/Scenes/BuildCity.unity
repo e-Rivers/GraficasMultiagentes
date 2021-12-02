@@ -167,7 +167,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   carPrefab: {fileID: 993549348249905, guid: 563375cb179ab4d4d8c0ce2bfc651964, type: 3}
-  carsNumber: 1
+  carsNumber: 100
   carsSpan: 2
   lightSpan: 10
   maxSteps: -1
