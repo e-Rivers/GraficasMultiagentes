@@ -33,7 +33,7 @@ public class AgentController : MonoBehaviour {
     List<Vector3> newPositions;
     // Pause the simulation while we get the update from the server
     bool hold = false;
-    int currStep = 1, currLight = 1;
+    int currStep = 1, currLight = 0;
     float timer = 0.0f, dt = 0.0f;
 
     public GameObject carPrefab;
@@ -118,7 +118,10 @@ public class AgentController : MonoBehaviour {
         else {
             StartCoroutine(GetCarsData());
 	        currStep++;
-	        if(currLight%lightSpan == 0) {
+	        if(currLight == lightSpan) {
+	        	updateTrafficLights();
+	        	currLight = 0;
+	        } else if(currLight == lightSpan-1) {
 	        	updateTrafficLights();
 	        }
 	        currLight++;
@@ -151,12 +154,18 @@ public class AgentController : MonoBehaviour {
     
     void updateTrafficLights() {
     	foreach(GameObject trafficLight in CityMaker.Instance.trafficLights) {
-    		if(trafficLight.transform.GetChild(1).gameObject.activeInHierarchy) {
+    		if(trafficLight.transform.GetChild(2).gameObject.activeInHierarchy && currLight == lightSpan-1) {
+    			trafficLight.transform.transform.GetChild(2).gameObject.SetActive(false);
+    			trafficLight.transform.transform.GetChild(0).gameObject.SetActive(false);
+	    		trafficLight.transform.transform.GetChild(1).gameObject.SetActive(true);
+    		} else if(trafficLight.transform.GetChild(1).gameObject.activeInHierarchy && currLight == lightSpan) {
     			trafficLight.transform.transform.GetChild(1).gameObject.SetActive(false);
+    			trafficLight.transform.transform.GetChild(2).gameObject.SetActive(false);
 	    		trafficLight.transform.transform.GetChild(0).gameObject.SetActive(true);
     		} else {
 	    		trafficLight.transform.transform.GetChild(0).gameObject.SetActive(false);
-    			trafficLight.transform.transform.GetChild(1).gameObject.SetActive(true);
+    			trafficLight.transform.transform.GetChild(1).gameObject.SetActive(false);
+    			trafficLight.transform.transform.GetChild(2).gameObject.SetActive(true);
     		}
     	}    
     }

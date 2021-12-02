@@ -449,6 +449,7 @@ MonoBehaviour:
   cornerPrefab: {fileID: 2883826701511572730, guid: ff06fdd4fceb8494bbc51b2c7d815348, type: 3}
   cornerInsidePrefab: {fileID: 1682772990011229100, guid: 69f4e32445c574e4f9e31d9bc2660626, type: 3}
   tileSize: 1
+  trafficLights: []
 --- !u!4 &1457529884
 Transform:
   m_ObjectHideFlags: 0
