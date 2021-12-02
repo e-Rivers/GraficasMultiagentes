@@ -1,0 +1,13 @@
+{
+    ">" : "Horizontal1",
+    "<" : "Horizontal2",
+    "8" : LightsUp,
+    "6" : LightsRight,
+    "2" : LightsDown,
+    "4" : LightsLeft,
+    "#" : "Obstacle",
+    "v" : "Down",
+    "^" : "Up",
+    "D" : "Destination",
+    "." : "Omni"
+}
