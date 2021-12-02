@@ -1,4 +1,4 @@
-/*
+﻿/*
 AgentController.cs
 
 Client code to interact with the server and keep updated the simulation running locally in Unity
@@ -21,7 +21,7 @@ public class CarData {
 
 public class AgentController : MonoBehaviour {
     //string serverUrl = "https://reto-robot-python-flask-a01748945-wacky-gazelle-yg.mybluemix.net";
-    string serverUrl = "http://192.168.1.95:8000";
+    string serverUrl = "localhost:8000"; //"http://192.168.1.66:8000";
     string getCarsEndpoint = "/getCars";
     string sendConfigEndpoint = "/init";
     string updateEndpoint = "/update";
@@ -50,7 +50,7 @@ public class AgentController : MonoBehaviour {
         timer = timeToUpdate;
 
         for(int i = 0; i < carsNumber; i++)
-            cars.Add(Instantiate(carPrefab, Vector3.zero, Quaternion.identity));
+            cars.Add(Instantiate(carPrefab, Vector3.zero, Quaternion.Euler(0, 180, 0)));
             
         StartCoroutine(SendConfiguration());
     }
@@ -74,7 +74,8 @@ public class AgentController : MonoBehaviour {
 		            cars[s].transform.localPosition = interpolated;
 		            
 		            Vector3 dir = oldPositions[s] - newPositions[s];
-		            cars[s].transform.rotation = Quaternion.LookRotation(dir);
+		            cars[s].transform.rotation = Quaternion.LookRotation(-dir);
+                    
 		            
 		        }
 		        // Move time from the last frame

@@ -25,7 +25,7 @@ class Car(Agent):
         """
         super().__init__(uniqueID, model)
         # Value used to make the car "disappear"
-        self.yPos = 1
+        self.yPos = 0
         # Attributes to make the agent know where to go 
         self.destination = destPos
         self.tmpDir = ""
