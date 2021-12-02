@@ -162,7 +162,7 @@ public class AgentController : MonoBehaviour {
     			trafficLight.transform.transform.GetChild(1).gameObject.SetActive(false);
     			trafficLight.transform.transform.GetChild(2).gameObject.SetActive(false);
 	    		trafficLight.transform.transform.GetChild(0).gameObject.SetActive(true);
-    		} else {
+    		} else if(trafficLight.transform.GetChild(0).gameObject.activeInHierarchy && currLight == lightSpan) {
 	    		trafficLight.transform.transform.GetChild(0).gameObject.SetActive(false);
     			trafficLight.transform.transform.GetChild(1).gameObject.SetActive(false);
     			trafficLight.transform.transform.GetChild(2).gameObject.SetActive(true);
