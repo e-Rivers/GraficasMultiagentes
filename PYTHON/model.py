@@ -64,7 +64,7 @@ class TrafficModel(Model):
         # Creates N new cars
         for i in range(self.num_agents):
             # Assings a random destination so the car movement won't be random
-            carAgent = Car(f"car{self.carIDs}", self, choice(self.destCoords))
+            carAgent = Car(self.carIDs, self, choice(self.destCoords))
             spawnPos = (randrange(0, self.width), randrange(0, self.height))
             conType = [type(i) for i in self.grid.get_cell_list_contents([spawnPos])]
             isAtCross = True
@@ -96,7 +96,7 @@ class TrafficModel(Model):
         # Every carSpan steps, creates a new car, assigns it a destination and places it in 
         # any of the corners of the board
         if self.schedule.steps % self.carSpan == 0:
-            carAgent = Car(f"car{self.carIDs}", self, choice(self.destCoords))
+            carAgent = Car(self.carIDs, self, choice(self.destCoords))
             self.grid.place_agent(carAgent, (choice([0, self.width-1]), choice([0, self.height-1])))
             self.schedule.add(carAgent)
             self.carIDs += 1

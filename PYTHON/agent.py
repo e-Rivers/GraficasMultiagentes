@@ -25,7 +25,7 @@ class Car(Agent):
         """
         super().__init__(uniqueID, model)
         # Value used to make the car "disappear"
-        self.y = 1
+        self.yPos = 1
         # Attributes to make the agent know where to go 
         self.destination = destPos
         self.tmpDir = ""
@@ -54,7 +54,7 @@ class Car(Agent):
         
         # If it's already in a Destination, then quits
         if Destination in getConOfCell(self.pos):
-            self.y = -1000000
+            self.yPos = -100
             return
 
         # Scans to find if there's a destination around
