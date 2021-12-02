@@ -55,6 +55,9 @@ class Car(Agent):
         # If it's already in a Destination, then quits
         if Destination in getConOfCell(self.pos):
             self.yPos = -100
+            print("#########################")
+            print(self.yPos)
+            print("#########################")
             return
 
         # Scans to find if there's a destination around

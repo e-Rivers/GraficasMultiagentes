@@ -14,6 +14,7 @@ Date: December 4th, 2021
 from model import TrafficModel
 from agent import *
 from flask import Flask, request, jsonify
+import os
 
 # This parameters will be providen by Unity
 carsNumber = 20
@@ -22,6 +23,7 @@ lightSpan = 10
 
 # Internal parameters
 trafficModel = None
+port = int(os.getenv("PORT", 8000))
 
 app = Flask("Traffic Simulation")
 
@@ -77,5 +79,6 @@ def updateModel():
         return jsonify({"message": "Model Updated!"})
 
 if __name__=='__main__':
-    app.run(host="localhost", port=8000, debug=True)
+    #app.run(host="localhost", port=8000, debug=True)
+    app.run(host="0.0.0.0", port=port, debug=True)
 
