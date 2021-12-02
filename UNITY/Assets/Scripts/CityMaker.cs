@@ -35,14 +35,14 @@ public class CityMaker : MonoBehaviour
     }
     
     void defaultTrafficLightsConfig() {
-    	trafficLights[0].transform.GetChild(1).gameObject.SetActive(true);
-    	trafficLights[1].transform.GetChild(1).gameObject.SetActive(true);
+    	trafficLights[0].transform.GetChild(2).gameObject.SetActive(true);
+    	trafficLights[1].transform.GetChild(2).gameObject.SetActive(true);
     	trafficLights[2].transform.GetChild(0).gameObject.SetActive(true);
     	trafficLights[3].transform.GetChild(0).gameObject.SetActive(true);
-    	trafficLights[4].transform.GetChild(1).gameObject.SetActive(true);
-    	trafficLights[5].transform.GetChild(1).gameObject.SetActive(true);
-    	trafficLights[6].transform.GetChild(1).gameObject.SetActive(true);
-    	trafficLights[7].transform.GetChild(1).gameObject.SetActive(true);
+    	trafficLights[4].transform.GetChild(2).gameObject.SetActive(true);
+    	trafficLights[5].transform.GetChild(2).gameObject.SetActive(true);
+    	trafficLights[6].transform.GetChild(2).gameObject.SetActive(true);
+    	trafficLights[7].transform.GetChild(2).gameObject.SetActive(true);
     	trafficLights[8].transform.GetChild(0).gameObject.SetActive(true);
     	trafficLights[9].transform.GetChild(0).gameObject.SetActive(true);
     	trafficLights[10].transform.GetChild(0).gameObject.SetActive(true);
@@ -51,18 +51,18 @@ public class CityMaker : MonoBehaviour
     	trafficLights[13].transform.GetChild(0).gameObject.SetActive(true);
     	trafficLights[14].transform.GetChild(0).gameObject.SetActive(true);
     	trafficLights[15].transform.GetChild(0).gameObject.SetActive(true);
-    	trafficLights[16].transform.GetChild(1).gameObject.SetActive(true);
-    	trafficLights[17].transform.GetChild(1).gameObject.SetActive(true);
-    	trafficLights[18].transform.GetChild(1).gameObject.SetActive(true);
-    	trafficLights[19].transform.GetChild(1).gameObject.SetActive(true);
-    	trafficLights[20].transform.GetChild(1).gameObject.SetActive(true);
-    	trafficLights[21].transform.GetChild(1).gameObject.SetActive(true);
+    	trafficLights[16].transform.GetChild(2).gameObject.SetActive(true);
+    	trafficLights[17].transform.GetChild(2).gameObject.SetActive(true);
+    	trafficLights[18].transform.GetChild(2).gameObject.SetActive(true);
+    	trafficLights[19].transform.GetChild(2).gameObject.SetActive(true);
+    	trafficLights[20].transform.GetChild(2).gameObject.SetActive(true);
+    	trafficLights[21].transform.GetChild(2).gameObject.SetActive(true);
     	trafficLights[22].transform.GetChild(0).gameObject.SetActive(true);
     	trafficLights[23].transform.GetChild(0).gameObject.SetActive(true);
     	trafficLights[24].transform.GetChild(0).gameObject.SetActive(true);
     	trafficLights[25].transform.GetChild(0).gameObject.SetActive(true);
-    	trafficLights[26].transform.GetChild(1).gameObject.SetActive(true);
-    	trafficLights[27].transform.GetChild(1).gameObject.SetActive(true);
+    	trafficLights[26].transform.GetChild(2).gameObject.SetActive(true);
+    	trafficLights[27].transform.GetChild(2).gameObject.SetActive(true);
     }
 
     void MakeTiles(string tiles)
