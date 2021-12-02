@@ -1,6 +1,12 @@
-﻿// TC2008B. Sistemas Multiagentes y Gráficas Computacionales
-// C# client to interact with Python. Based on the code provided by Sergio Ruiz.
-// Octavio Navarro. October 2021
+/*
+AgentController.cs
+
+Client code to interact with the server and keep updated the simulation running locally in Unity
+
+Authors: Melissa Garduño Ruiz (A01748945), Omar Rodrigo Sorchini Puente (A01749389), Emilio Rios Ochoa (A01378965)
+Based on the code provided by Octavio Navarro
+Date: December 4th, 2021
+*/
 
 using System;
 using System.Collections;
@@ -9,85 +15,81 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public class AgentData {
+public class CarData {
     public List<Vector3> positions;
 }
 
 public class AgentController : MonoBehaviour {
-    string serverUrl = "http://localhost:8585";
-    string getAgentsEndpoint = "/getAgents";
-    string getObstaclesEndpoint = "/getObstacles";
+    //string serverUrl = "https://reto-robot-python-flask-a01748945-wacky-gazelle-yg.mybluemix.net";
+    string serverUrl = "http://192.168.1.95:8000";
+    string getCarsEndpoint = "/getCars";
     string sendConfigEndpoint = "/init";
     string updateEndpoint = "/update";
     
     
-    AgentData carsData, obstacleData;
-    GameObject[] agents;
+    CarData carsData;
+    List<GameObject> cars;
     List<Vector3> oldPositions;
     List<Vector3> newPositions;
     // Pause the simulation while we get the update from the server
     bool hold = false;
+    int currStep = 1, currLight = 1;
+    float timer = 0.0f, dt = 0.0f;
 
-    public GameObject carPrefab, obstaclePrefab, floor;
-    public int NAgents, width, height;
-    public float timeToUpdate = 5.0f, timer, dt;
+    public GameObject carPrefab;
+    public int carsNumber, carsSpan, lightSpan, maxSteps;
+    public float timeToUpdate = 1.0f;
 
-    void Start()
-    {
-        carsData = new AgentData();
-        obstacleData = new AgentData();
+    void Start() {
+        carsData = new CarData();
         oldPositions = new List<Vector3>();
         newPositions = new List<Vector3>();
 
-        agents = new GameObject[NAgents];
+        cars = new List<GameObject>();
 
-        floor.transform.localScale = new Vector3((float)width/10, 1, (float)height/10);
-        floor.transform.localPosition = new Vector3((float)width/2-0.5f, 0, (float)height/2-0.5f);
-        
         timer = timeToUpdate;
 
-        for(int i = 0; i < NAgents; i++)
-            agents[i] = Instantiate(carPrefab, Vector3.zero, Quaternion.identity);
+        for(int i = 0; i < carsNumber; i++)
+            cars.Add(Instantiate(carPrefab, Vector3.zero, Quaternion.identity));
             
         StartCoroutine(SendConfiguration());
     }
 
     private void Update() 
     {
-        /*float t = timer/timeToUpdate;
-        // Smooth out the transition at start and end
-        dt = t * t * ( 3f - 2f*t);
+    	if(currStep <= maxSteps || maxSteps == -1) {
+		    float t = timer/timeToUpdate;
+		    // Smooth out the transition at start and end
+		    dt = t * t * ( 3f - 2f*t);
 
-        if(timer >= timeToUpdate)
-        {
-            timer = 0;
-            hold = true;
-            StartCoroutine(UpdateSimulation());
+		    if(timer >= timeToUpdate) {
+		        timer = 0;
+		        hold = true;
+		        StartCoroutine(UpdateSimulation());
+		    }
+
+		    if (!hold) {
+		        for (int s = 0; s < cars.Count; s++) {
+		            Vector3 interpolated = Vector3.Lerp(oldPositions[s], newPositions[s], dt);
+		            cars[s].transform.localPosition = interpolated;
+		            
+		            Vector3 dir = oldPositions[s] - newPositions[s];
+		            cars[s].transform.rotation = Quaternion.LookRotation(dir);
+		            
+		        }
+		        // Move time from the last frame
+		        timer += Time.deltaTime;
+		    }
         }
-
-        if (!hold)
-        {
-            for (int s = 0; s < agents.Length; s++)
-            {
-                Vector3 interpolated = Vector3.Lerp(oldPositions[s], newPositions[s], dt);
-                agents[s].transform.localPosition = interpolated;
-                
-                Vector3 dir = oldPositions[s] - newPositions[s];
-                agents[s].transform.rotation = Quaternion.LookRotation(dir);
-                
-            }
-            // Move time from the last frame
-            timer += Time.deltaTime;
-        }*/
     }
  
     IEnumerator SendConfiguration()
     {
         WWWForm form = new WWWForm();
 
-        form.AddField("NAgents", NAgents.ToString());
-        form.AddField("width", width.ToString());
-        form.AddField("height", height.ToString());
+        form.AddField("carsNumber", carsNumber.ToString());
+        form.AddField("carsSpan", carsSpan.ToString());
+        form.AddField("lightSpan", lightSpan.ToString());
 
         UnityWebRequest www = UnityWebRequest.Post(serverUrl + sendConfigEndpoint, form);
         www.SetRequestHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -102,64 +104,60 @@ public class AgentController : MonoBehaviour {
         {
             Debug.Log("Configuration upload complete!");
             Debug.Log("Getting Agents positions");
-            //StartCoroutine(GetCarsData());
-            //StartCoroutine(GetObstacleData());
+            StartCoroutine(GetCarsData());
         }
     }
 
-	/*IEnumerator UpdateSimulation()
-    {
+	IEnumerator UpdateSimulation() {
         UnityWebRequest www = UnityWebRequest.Get(serverUrl + updateEndpoint);
         yield return www.SendWebRequest();
  
         if (www.result != UnityWebRequest.Result.Success)
             Debug.Log(www.error);
-        else 
-        {
+        else {
             StartCoroutine(GetCarsData());
+	        currStep++;
+	        if(currLight%lightSpan == 0) {
+	        	updateTrafficLights();
+	        }
+	        currLight++;
         }
     }
 
-    IEnumerator GetCarsData() 
-    {
-        UnityWebRequest www = UnityWebRequest.Get(serverUrl + getAgentsEndpoint);
+    IEnumerator GetCarsData() {
+        UnityWebRequest www = UnityWebRequest.Get(serverUrl + getCarsEndpoint);
         yield return www.SendWebRequest();
  
         if (www.result != UnityWebRequest.Result.Success)
             Debug.Log(www.error);
-        else 
-        {
-            carsData = JsonUtility.FromJson<AgentData>(www.downloadHandler.text);
+        else {
+            carsData = JsonUtility.FromJson<CarData>(www.downloadHandler.text);
 
             // Store the old positions for each agent
             oldPositions = new List<Vector3>(newPositions);
-
             newPositions.Clear();
 
-            foreach(Vector3 v in carsData.positions)
-                newPositions.Add(v);
+            for(int v = 0; v < carsData.positions.Count; v++) {
+                newPositions.Add(carsData.positions[v]);
+                if(v > cars.Count) {
+                	cars.Add(Instantiate(carPrefab, carsData.positions[v], Quaternion.identity));
+                }
+            }
 
             hold = false;
         }
     }
+    
+    void updateTrafficLights() {
+    	foreach(GameObject trafficLight in CityMaker.Instance.trafficLights) {
+    		if(trafficLight.transform.GetChild(1).gameObject.activeInHierarchy) {
+    			trafficLight.transform.transform.GetChild(1).gameObject.SetActive(false);
+	    		trafficLight.transform.transform.GetChild(0).gameObject.SetActive(true);
+    		} else {
+	    		trafficLight.transform.transform.GetChild(0).gameObject.SetActive(false);
+    			trafficLight.transform.transform.GetChild(1).gameObject.SetActive(true);
+    		}
+    	}    
+    }
 
-    IEnumerator GetObstacleData() 
-    {
-        UnityWebRequest www = UnityWebRequest.Get(serverUrl + getObstaclesEndpoint);
-        yield return www.SendWebRequest();
- 
-        if (www.result != UnityWebRequest.Result.Success)
-            Debug.Log(www.error);
-        else 
-        {
-            obstacleData = JsonUtility.FromJson<AgentData>(www.downloadHandler.text);
-
-            Debug.Log(obstacleData.positions);
-
-            foreach(Vector3 position in obstacleData.positions)
-            {
-                Instantiate(obstaclePrefab, position, Quaternion.identity);
-            }
-        }
-    }*/
 }
