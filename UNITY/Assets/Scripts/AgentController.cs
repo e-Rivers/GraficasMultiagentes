@@ -16,7 +16,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 
 public class CarData {
-    public List<Vector3> positions;
+    public List<Vector4> positions;
 }
 
 public class AgentController : MonoBehaviour {
@@ -142,10 +142,12 @@ public class AgentController : MonoBehaviour {
             newPositions.Clear();
 
             for(int v = 0; v < carsData.positions.Count; v++) {
-                newPositions.Add(carsData.positions[v]);
+                newPositions.Add(new Vector3(carsData.positions[v][0], carsData.positions[v][1], carsData.positions[v][2]));
                 if(v > cars.Count) {
-                	cars.Add(Instantiate(carPrefab, carsData.positions[v], Quaternion.identity));
+                	cars.Add(Instantiate(carPrefab, new Vector3(carsData.positions[v][0], carsData.positions[v][1], carsData.positions[v][2]), Quaternion.identity));
                 }
+                
+                // isStopped = (int) carsData.positions[v][3];
             }
 
             hold = false;
