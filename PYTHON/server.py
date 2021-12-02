@@ -1,57 +1,81 @@
+# -*- coding: utf-8 -*-
+"""
+Server.py
+
+Server setup that will be used to connect the model developed with
+MESA and the graphical environment developed with Unity to display a
+graphical solution of the simulation of city traffic.
+
+Authors: Melissa Garduño Ruiz (A01748945), Omar Rodrigo Sorchini Puente (A01749389), Emilio Ri
+os Ochoa (A01378965)
+Date: December 4th, 2021
+"""
+
+from model import TrafficModel
 from agent import *
-from model import RandomModel
-from mesa.visualization.modules import CanvasGrid, BarChartModule
-from mesa.visualization.ModularVisualization import ModularServer
+from flask import Flask, request, jsonify
 
-def agent_portrayal(agent):
-    if agent is None: return
+# This parameters will be providen by Unity
+carsNumber = 20
+carsSpan = 2
+lightSpan = 10
 
-    portrayal = {"Shape": "rect",
-                 "Filled": "true",
-                 "w": 1,
-                 "h": 1}
+# Internal parameters
+trafficModel = None
 
-    if (isinstance(agent, Road)):
-        portrayal["Color"] = "grey"
-        portrayal["Layer"] = 0
-    
-    if (isinstance(agent, Destination)):
-        portrayal["Color"] = "lightgreen"
-        portrayal["Layer"] = 0
+app = Flask("Traffic Simulation")
 
-    if (isinstance(agent, Traffic_Light)):
-        portrayal["Color"] = "red" if not agent.state else "green"
-        portrayal["Layer"] = 0
-        portrayal["w"] = 0.8
-        portrayal["h"] = 0.8
+"""
+Function that gets executed when de /init service is called and serves the purpose of
+initializing the model based on the parameters received from the Unity client
+● Parameters: None
+● Return: json structure to notify that there was success
+"""
+@app.route('/init', methods=['POST', 'GET'])
+def initModel():
+    global trafficModel, carsNumer, carsSpan, lightSpan
 
-    if (isinstance(agent, Obstacle)):
-        portrayal["Color"] = "cadetblue"
-        portrayal["Layer"] = 0
-        portrayal["w"] = 0.8
-        portrayal["h"] = 0.8
+    if request.method == "POST":
+        carsNumber = int(request.form.get("carsNumber"))
+        carsSpan = int(request.form.get("carsSpan"))
+        lightSpan = int(request.form.get("lightSpan"))
 
-    if (isinstance(agent, Car)):
-        portrayal["Color"] = "#0000FF"
-        portrayal["Layer"] = 1
-        portrayal["Shape"] = "circle"
-        portrayal["r"] = 1
+        print(request.form)
+        trafficModel = TrafficModel(carsNumber, carsSpan, lightSpan)
 
-    return portrayal
+        return jsonify({"message": "Parameters received, model initiated."})
 
-width = 0
-height = 0
+"""
+Function that gets executed when de /getCars service is called and serves the purpose of
+informing the client about the changes in the coordinates of each car agent on the grid
+● Parameters: None
+● Return: json with the positions of all car agents in the model
+"""
+@app.route('/getCars', methods=['GET'])
+def getCars():
+    global trafficModel
 
-with open('base.txt') as baseFile:
-    lines = baseFile.readlines()
-    width = len(lines[0])-1
-    height = len(lines)
+    if request.method == "GET":
+        carPositions = [{"x":x,"y":e.yPos,"z":z,"id":e.unique_id} for (a,x,z) in trafficModel.grid.coord_iter() for e in a if isinstance(e, Car)]
 
-model_params = {"N":5, "carSpan": 10, "intel": 1}
+        print(carPositions)
+        carPositions.sort(key=lambda x: x["id"])
+        return jsonify({"positions": carPositions})
 
-grid = CanvasGrid(agent_portrayal, width, height, 500, 500)
+"""
+Function that gets executed when de /update service is called and serves the purpose of
+executing the step, that is, activate the agents to make their corresponding movement
+● Parameters: None
+● Return: json structure to notify the current step
+"""
+@app.route('/update', methods=['GET'])
+def updateModel():
+    global trafficModel
 
-server = ModularServer(RandomModel, [grid], "Traffic Base", model_params)
-                       
-server.port = 8521 # The default
-server.launch()
+    if request.method == "GET":
+        trafficModel.step()
+        return jsonify({"message": "Model Updated!"})
+
+if __name__=='__main__':
+    app.run(host="localhost", port=8000, debug=True)
+
