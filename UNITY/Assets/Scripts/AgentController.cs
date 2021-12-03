@@ -20,12 +20,11 @@ public class CarData {
 }
 
 public class AgentController : MonoBehaviour {
-    //string serverUrl = "https://reto-robot-python-flask-a01748945-wacky-gazelle-yg.mybluemix.net";
-    string serverUrl = "localhost:8000"; //"http://192.168.1.66:8000";
+    string serverUrl = "https://reto-robot-python-flask-a01748945-wacky-gazelle-yg.mybluemix.net";
+    //string serverUrl = "localhost:8000";
     string getCarsEndpoint = "/getCars";
     string sendConfigEndpoint = "/init";
     string updateEndpoint = "/update";
-    
     
     CarData carsData;
     List<GameObject> cars;
